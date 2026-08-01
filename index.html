@@ -11,11 +11,9 @@
         body { font-family: 'Inter', system-ui, sans-serif; }
         .video-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
         .video-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2); }
-        .yt-red { color: #ff0000; }
         .modal { animation: fadeInScale 0.2s ease forwards; }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .nav-active { border-bottom: 2px solid #ff0000; font-weight: 600; }
-        .video-grid { scrollbar-width: thin; }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200">
@@ -23,7 +21,6 @@
     <nav class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50">
         <div class="max-w-screen-2xl mx-auto px-4 h-14 flex items-center justify-between">
             <div class="flex items-center gap-x-4">
-                <!-- Logo -->
                 <div class="flex items-center gap-x-2">
                     <div class="w-9 h-9 bg-red-600 rounded flex items-center justify-center">
                         <i class="fa-solid fa-play text-white text-xl"></i>
@@ -33,7 +30,6 @@
                     </div>
                 </div>
                 
-                <!-- Search -->
                 <div class="hidden md:flex items-center w-96">
                     <div class="flex w-full border border-zinc-700 rounded-full overflow-hidden bg-zinc-900 focus-within:border-zinc-500">
                         <input id="search-input" 
@@ -50,6 +46,14 @@
             </div>
 
             <div class="flex items-center gap-x-2">
+                <!-- Backend / Settings -->
+                <button onclick="showBackendModal()" 
+                        class="flex items-center gap-x-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-full text-xs font-medium border border-zinc-700"
+                        title="Configure free backend storage (Cloudinary)">
+                    <i class="fa-solid fa-cloud"></i>
+                    <span class="hidden sm:inline">Backend</span>
+                </button>
+                
                 <!-- Upload Button -->
                 <button onclick="showUploadModal()" 
                         class="flex items-center gap-x-2 px-4 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-full text-sm font-medium border border-zinc-700">
@@ -87,31 +91,29 @@
                 </a>
             </div>
             
-            <div class="mt-8 px-4">
-                <div class="text-xs text-zinc-500">ContentHub v0.1 MVP</div>
-                <div class="mt-2 text-[10px] text-zinc-500 leading-tight">
-                    One-shot build. Links to <a href="https://daisychainrrr.github.io/verified-hub-mvp/aircode-integrated-mvp/" class="underline">Content Examining</a>
+            <div class="mt-8 px-4 text-xs text-zinc-500">
+                <div>ContentHub MVP</div>
+                <div class="mt-1 text-[10px] leading-tight">
+                    Static GitHub Pages. Real uploads require free Cloudinary (see Backend button).
                 </div>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="flex-1 py-6 pl-0 lg:pl-6">
-            
-            <!-- Home Section -->
             <div id="home-section">
                 <div class="flex items-center justify-between mb-4">
                     <h1 class="text-2xl font-semibold">Recommended for you</h1>
-                    <div class="text-xs px-3 py-1 bg-zinc-900 rounded-full border border-zinc-700">Updated just now</div>
+                    <div id="storage-notice" class="text-xs px-3 py-1 bg-zinc-900 rounded-full border border-zinc-700 hidden">
+                        Using browser storage only (resets on clear)
+                    </div>
                 </div>
 
-                <!-- Video Grid -->
                 <div id="video-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                     <!-- Populated by JS -->
                 </div>
             </div>
 
-            <!-- Verified Section (filterable) -->
             <div id="verified-section" class="hidden">
                 <div class="flex items-center gap-x-2 mb-4">
                     <i class="fa-solid fa-shield-halved text-emerald-400"></i>
@@ -119,7 +121,6 @@
                     <span class="text-xs bg-emerald-900 text-emerald-300 px-2 py-0.5 rounded">Consent &amp; Age Examined</span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4" id="verified-grid">
-                    <!-- Populated by JS from verified videos -->
                 </div>
             </div>
         </div>
@@ -128,13 +129,10 @@
     <!-- Video Player Modal -->
     <div id="player-modal" onclick="if (event.target.id === 'player-modal') closePlayer()" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
         <div onclick="event.stopImmediatePropagation()" class="bg-zinc-900 rounded-3xl w-full max-w-5xl overflow-hidden">
-            <!-- Video -->
             <div class="aspect-video bg-black relative">
                 <video id="player-video" class="w-full h-full" controls></video>
-                
                 <button onclick="closePlayer()" class="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm flex items-center gap-x-1">
                     <i class="fa-solid fa-times"></i>
-                    <span class="hidden sm:inline">Close</span>
                 </button>
             </div>
 
@@ -162,10 +160,9 @@
 
                 <div class="mt-4 text-sm text-zinc-400" id="player-desc"></div>
 
-                <!-- Comments -->
                 <div class="mt-6">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="font-semibold">Comments (42)</div>
+                        <div class="font-semibold">Comments</div>
                     </div>
                     <div class="flex gap-x-3 mb-4">
                         <input id="comment-input" type="text" placeholder="Add a comment..." 
@@ -211,104 +208,128 @@
                 <button onclick="hideUploadModal()" class="flex-1 py-2.5 rounded-2xl border border-zinc-700 text-sm">Cancel</button>
                 <button onclick="performUpload()" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 rounded-2xl text-sm font-medium">Upload Video</button>
             </div>
-            <p class="text-[10px] text-center text-zinc-500 mt-3">MVP simulation • File is not actually uploaded to a server</p>
+            <p class="text-[10px] text-center text-zinc-500 mt-3">Videos are stored via free Cloudinary (if configured) or temporarily in your browser.</p>
+        </div>
+    </div>
+
+    <!-- Backend Settings Modal (Cloudinary etc.) -->
+    <div id="backend-modal" onclick="if (event.target.id === 'backend-modal') hideBackendModal()" class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()" class="bg-zinc-900 rounded-3xl w-full max-w-md p-6">
+            <h3 class="text-lg font-semibold mb-4">Free Backend Storage</h3>
+            
+            <div class="bg-zinc-800 p-3 rounded-2xl text-xs mb-4">
+                <strong>Recommended free option:</strong> Cloudinary (25 GB free storage + bandwidth).<br>
+                1. Go to cloudinary.com → sign up (free)<br>
+                2. Go to Settings → Upload → Add upload preset (unsigned)<br>
+                3. Paste your Cloud Name and Preset below.
+            </div>
+
+            <div class="space-y-3 text-sm">
+                <div>
+                    <label class="text-xs text-zinc-400">Cloudinary Cloud Name</label>
+                    <input id="cloud-name" type="text" placeholder="e.g. mycloud123" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-4 py-2 mt-1">
+                </div>
+                <div>
+                    <label class="text-xs text-zinc-400">Unsigned Upload Preset</label>
+                    <input id="upload-preset" type="text" placeholder="e.g. contenthub_unsigned" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-4 py-2 mt-1">
+                </div>
+            </div>
+
+            <div class="mt-5 flex gap-x-3">
+                <button onclick="saveBackendSettings(); hideBackendModal()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 rounded-2xl text-sm">Save &amp; Use</button>
+                <button onclick="hideBackendModal()" class="flex-1 py-2.5 border border-zinc-700 rounded-2xl text-sm">Cancel</button>
+            </div>
+            
+            <p class="text-[10px] text-center text-zinc-500 mt-4">Without Cloudinary, uploads only live in your browser (temporary for testing).</p>
         </div>
     </div>
 
     <footer class="border-t border-zinc-800 mt-12 py-6 text-xs text-zinc-500 max-w-screen-2xl mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-center gap-y-2">
-            <div>© ContentHub MVP • One-shot build</div>
+            <div>© ContentHub MVP • Static GitHub Pages</div>
             <div class="flex gap-x-4">
                 <a href="https://daisychainrrr.github.io/verified-hub-mvp/aircode-integrated-mvp/" class="hover:text-zinc-300">← Back to Content Examining / Verified Hub</a>
-                <a href="#" class="hover:text-zinc-300">About</a>
             </div>
         </div>
     </footer>
 
     <script>
-        // Sample videos (mix of regular + verified to tie into previous consent system)
-        let videos = [
-            {
-                id: 1,
-                title: "How AI is Changing Creative Work",
-                channel: "Tech Explained",
-                views: "1.2M",
-                time: "2 days ago",
-                duration: "18:42",
-                thumbnail: "https://picsum.photos/id/1015/320/180",
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                verified: true,
-                desc: "Deep dive into modern AI tools and their impact on creators.",
-                category: "tech"
-            },
-            {
-                id: 2,
-                title: "Late Night City Drive (4K)",
-                channel: "Urban Vibes",
-                views: "892K",
-                time: "1 week ago",
-                duration: "42:15",
-                thumbnail: "https://picsum.photos/id/1005/320/180",
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                verified: false,
-                desc: "Relaxing 4K drive through the city at night.",
-                category: "entertainment"
-            },
-            {
-                id: 3,
-                title: "Consent &amp; Ethics in Digital Content",
-                channel: "Alex Rivera",
-                views: "456K",
-                time: "3 days ago",
-                duration: "27:09",
-                thumbnail: "https://picsum.photos/id/201/320/180",
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                verified: true,
-                desc: "Important discussion on consent, age verification, and responsible content creation.",
-                category: "verified"
-            },
-            {
-                id: 4,
-                title: "Building a Startup in 2026",
-                channel: "Founder Stories",
-                views: "2.1M",
-                time: "5 days ago",
-                duration: "31:55",
-                thumbnail: "https://picsum.photos/id/29/320/180",
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                verified: true,
-                desc: "Practical advice from successful founders.",
-                category: "tech"
-            },
-            {
-                id: 5,
-                title: "Epic Mountain Hike Vlog",
-                channel: "Outdoor Adventures",
-                views: "634K",
-                time: "2 weeks ago",
-                duration: "15:30",
-                thumbnail: "https://picsum.photos/id/1008/320/180",
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                verified: false,
-                desc: "Stunning views from a 3-day trek.",
-                category: "entertainment"
-            },
-            {
-                id: 6,
-                title: "The Future of Privacy Online",
-                channel: "Alex Rivera",
-                views: "312K",
-                time: "1 day ago",
-                duration: "22:18",
-                thumbnail: "https://picsum.photos/id/160/320/180",
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                verified: true,
-                desc: "How invisible proof systems and on-chain verification are changing the web.",
-                category: "verified"
-            }
-        ];
+        // === Configuration ===
+        let CLOUD_NAME = localStorage.getItem('ch_cloud_name') || '';
+        let UPLOAD_PRESET = localStorage.getItem('ch_upload_preset') || '';
 
+        let videos = [];
         let currentVideo = null;
+
+        // Load from localStorage on start
+        function loadVideos() {
+            const saved = localStorage.getItem('ch_videos');
+            if (saved) {
+                try {
+                    videos = JSON.parse(saved);
+                } catch(e) {}
+            }
+            
+            // Default sample videos if nothing saved
+            if (videos.length === 0) {
+                videos = [
+                    {
+                        id: 1,
+                        title: "How AI is Changing Creative Work",
+                        channel: "Tech Explained",
+                        views: "1.2M",
+                        time: "2 days ago",
+                        duration: "18:42",
+                        thumbnail: "https://picsum.photos/id/1015/320/180",
+                        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                        verified: true,
+                        desc: "Deep dive into modern AI tools and their impact on creators.",
+                        category: "tech"
+                    },
+                    {
+                        id: 2,
+                        title: "Consent & Ethics in Digital Content",
+                        channel: "Alex Rivera",
+                        views: "456K",
+                        time: "3 days ago",
+                        duration: "27:09",
+                        thumbnail: "https://picsum.photos/id/201/320/180",
+                        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                        verified: true,
+                        desc: "Important discussion on consent, age verification, and responsible content creation.",
+                        category: "verified"
+                    }
+                ];
+                saveVideos();
+            }
+        }
+
+        function saveVideos() {
+            localStorage.setItem('ch_videos', JSON.stringify(videos));
+        }
+
+        function showBackendModal() {
+            document.getElementById('cloud-name').value = CLOUD_NAME;
+            document.getElementById('upload-preset').value = UPLOAD_PRESET;
+            document.getElementById('backend-modal').classList.remove('hidden');
+            document.getElementById('backend-modal').classList.add('flex');
+        }
+
+        function hideBackendModal() {
+            document.getElementById('backend-modal').classList.add('hidden');
+            document.getElementById('backend-modal').classList.remove('flex');
+        }
+
+        function saveBackendSettings() {
+            CLOUD_NAME = document.getElementById('cloud-name').value.trim();
+            UPLOAD_PRESET = document.getElementById('upload-preset').value.trim();
+            
+            localStorage.setItem('ch_cloud_name', CLOUD_NAME);
+            localStorage.setItem('ch_upload_preset', UPLOAD_PRESET);
+            
+            alert("Backend settings saved. Real uploads will now use Cloudinary if configured.");
+            hideBackendModal();
+        }
 
         function renderVideos(filteredVideos = videos) {
             const grid = document.getElementById('video-grid');
@@ -327,13 +348,13 @@
 
             if (verifiedGrid) {
                 verifiedVideos.forEach(video => {
-                    const card = createVideoCard(video, true);
+                    const card = createVideoCard(video);
                     verifiedGrid.appendChild(card);
                 });
             }
         }
 
-        function createVideoCard(video, isVerifiedOnly = false) {
+        function createVideoCard(video) {
             const card = document.createElement('div');
             card.className = `video-card bg-zinc-900 rounded-2xl overflow-hidden cursor-pointer border border-zinc-800`;
             
@@ -371,7 +392,7 @@
             const filtered = videos.filter(v => 
                 v.title.toLowerCase().includes(term) || 
                 v.channel.toLowerCase().includes(term) ||
-                v.desc.toLowerCase().includes(term)
+                (v.desc && v.desc.toLowerCase().includes(term))
             );
             const grid = document.getElementById('video-grid');
             grid.innerHTML = '';
@@ -414,7 +435,6 @@
             videoEl.src = video.videoUrl;
             videoEl.play();
 
-            // Reset comments
             document.getElementById('comments-list').innerHTML = `
                 <div class="flex gap-x-3 text-xs"><div class="font-medium">CreatorFan42</div><div class="text-zinc-400">This is exactly what we needed.</div></div>
             `;
@@ -462,11 +482,48 @@
             document.getElementById('upload-modal').classList.remove('flex');
         }
 
-        function performUpload() {
+        async function performUpload() {
             const title = document.getElementById('upload-title').value || "Untitled Upload";
             const desc = document.getElementById('upload-desc').value;
             const isVerified = document.getElementById('upload-verified').checked;
             const fileInput = document.getElementById('upload-file');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select a video file");
+                return;
+            }
+
+            let videoUrl = URL.createObjectURL(file);
+            let thumbnail = "https://picsum.photos/id/180/320/180";
+
+            // === Real upload to Cloudinary if configured ===
+            if (CLOUD_NAME && UPLOAD_PRESET) {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', UPLOAD_PRESET);
+                    formData.append('resource_type', 'video');
+
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await res.json();
+                    if (data.secure_url) {
+                        videoUrl = data.secure_url;
+                        thumbnail = data.secure_url.replace('.mp4', '.jpg').replace('/upload/', '/upload/w_320,h_180,c_fill/');
+                        alert("Video uploaded to Cloudinary successfully!");
+                    } else {
+                        throw new Error("Upload failed");
+                    }
+                } catch (err) {
+                    alert("Cloudinary upload failed. Using browser-only version for now.\nError: " + err.message);
+                }
+            } else {
+                alert("No Cloudinary configured — using temporary browser storage only (will disappear on reload). Go to Backend button to set it up for free permanent storage.");
+            }
 
             const newVideo = {
                 id: Date.now(),
@@ -475,53 +532,51 @@
                 views: "1",
                 time: "just now",
                 duration: "0:00",
-                thumbnail: fileInput.files[0] ? URL.createObjectURL(fileInput.files[0]) : "https://picsum.photos/id/180/320/180",
-                videoUrl: fileInput.files[0] ? URL.createObjectURL(fileInput.files[0]) : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                thumbnail: thumbnail,
+                videoUrl: videoUrl,
                 verified: isVerified,
                 desc: desc,
                 category: isVerified ? "verified" : "entertainment"
             };
 
             videos.unshift(newVideo);
+            saveVideos();
             renderVideos();
             hideUploadModal();
 
-            // Auto play the newly uploaded video
+            // Auto-open the new video
             setTimeout(() => {
                 playVideo(newVideo);
-            }, 600);
+            }, 400);
         }
 
         function showConsentProof() {
             if (currentVideo && currentVideo.verified) {
                 window.open('https://daisychainrrr.github.io/verified-hub-mvp/aircode-integrated-mvp/', '_blank');
             } else {
-                alert("This video is not marked as Consent Verified. Visit the Content Examining hub for examples.");
+                alert("This video is not marked as Consent Verified.");
                 window.open('https://daisychainrrr.github.io/verified-hub-mvp/aircode-integrated-mvp/', '_blank');
             }
         }
 
         function initialize() {
+            loadVideos();
             renderVideos();
 
-            // Make search work on enter too
             const search = document.getElementById('search-input');
             search.addEventListener('keyup', function(e) {
                 if (e.key === 'Enter') filterVideos();
             });
 
-            // Default to home
             document.getElementById('nav-home').classList.add('nav-active');
 
-            // Keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
-                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
-                    e.preventDefault();
-                    search.focus();
-                }
-            });
+            // Show notice if no Cloudinary is set
+            if (!CLOUD_NAME) {
+                const notice = document.getElementById('storage-notice');
+                if (notice) notice.classList.remove('hidden');
+            }
 
-            console.log('%c[ContentHub MVP] One-shot video hosting site ready. Links to Content Examining included.', 'color:#3f3f46');
+            console.log('%c[ContentHub] Enhanced with browser persistence + optional free Cloudinary backend.', 'color:#3f3f46');
         }
 
         window.onload = initialize;
